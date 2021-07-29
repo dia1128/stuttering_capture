@@ -1,9 +1,15 @@
 import 'dart:io';
 
+import 'package:amplify_flutter/amplify.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_storage_s3/amplify_storage_s3.dart';
+
+import 'amplifyconfiguration.dart';
 
 
 
@@ -19,6 +25,19 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
+
+  MyApp()
+  {
+    amplify();
+
+  }
+  Future<void> amplify() async {
+    // Add this line, to include Auth and Storage plugins.
+    await Amplify.addPlugins([AmplifyAuthCognito(), AmplifyStorageS3()]);
+// ... add other plugins, if any
+    await Amplify.configure(amplifyconfig);
+
+   }
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -142,6 +161,8 @@ class _SessionPageState extends State<SessionPage> {
                     onStartPressed();
                   else
                     onStopPressed();
+
+
                 },
                 child: controller.value.isRecordingVideo ?
                 Text ("stop recording") : Text('Start Session'),
@@ -170,6 +191,17 @@ class _SessionPageState extends State<SessionPage> {
   Future<void> onStopPressed() async {
     await controller.stopVideoRecording();
     setState(() {});
+    String date = DateTime.now().toIso8601String();
+    try {
+      final UploadFileResult result = await Amplify.Storage.uploadFile(
+
+        local: File(filePath),
+        key: '$date.mp4',
+      );
+      print('Successfully uploaded file: ${result.key}');
+    } on StorageException catch (e) {
+      print('Error uploading file: $e');
+    }
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => ShowMessage ()),);
@@ -186,9 +218,20 @@ class ShowMessage extends StatefulWidget {
 }
 
 class _ShowMessageState extends State<ShowMessage> {
-
+  //SortedMap<Duration, ActionEntry> actionTable;
   File image;
+  File textFile;
   ImagePicker imagePicker = ImagePicker();
+  final myController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    myController.dispose();
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     /*return Scaffold(
@@ -226,8 +269,10 @@ class _ShowMessageState extends State<ShowMessage> {
           Column(
 
             children: [
+
               Text("Description"),
               TextField(
+                controller: myController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Feedback',
@@ -267,11 +312,37 @@ class _ShowMessageState extends State<ShowMessage> {
 
 
               ),
+
               ElevatedButton(
                 style: ButtonStyle(
                   //foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
                 ),
-                onPressed: () {
+                onPressed: () async {
+                  String date = DateTime.now().toIso8601String();
+                  try {
+                    final UploadFileResult result = await Amplify.Storage.uploadFile(
+
+                      local: image,
+                      key: 'date.jpeg',
+                    );
+                    print('Successfully uploaded file: ${result.key}');
+                  } on StorageException catch (e) {
+                    print('Error uploading file: $e');
+                  }
+
+                  File txtUpload = await createActionTextFile();
+                  txtUpload.writeAsString(myController.text);
+
+                  try {
+                    final UploadFileResult result = await Amplify.Storage.uploadFile (
+
+                      local: txtUpload,
+                      key: 'date.txt',
+                    );
+                    print('Successfully uploaded file: ${result.key}');
+                  } on StorageException catch (e) {
+                    print('Error uploading file: $e');
+                  }
 
                 },
                 child: const Text('Submit'),
@@ -346,6 +417,24 @@ class _ShowMessageState extends State<ShowMessage> {
   }
 
 
+
+  /// Create the csv file used to store the action data. This
+  /// function does not write to the file, only creates it
+  /// Returns: A file that is created asynchronously
+  Future<File> createActionTextFile() async {
+    // reset the action table
+    //actionTable = SortedMap<Duration, ActionEntry>(Ordering.byKey());
+    // get the app's storage directory
+    final Directory extDir = await getApplicationDocumentsDirectory();
+    // path in local files
+    final String dirPath = '${extDir.path}/camera_app/text_action_files';
+    await Directory(dirPath).create(recursive: true);
+    final String filePath = '$dirPath/' + DateTime.now().toString();
+    // The file name
+    File file = File(filePath);
+    textFile = file;
+    return file;
+  }
 
 
 

@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-stutteringdetection-staging-185155-authRole",
+      "UnauthRoleArn": "arn:aws:iam::323387750821:role/amplify-stutteringdetection-staging-185155-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::323387750821:role/amplify-stutteringdetection-staging-185155-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-stutteringdetection-staging-185155-deployment",
+      "UnauthRoleName": "amplify-stutteringdetection-staging-185155-unauthRole",
+      "StackName": "amplify-stutteringdetection-staging-185155",
+      "StackId": "arn:aws:cloudformation:us-east-2:323387750821:stack/amplify-stutteringdetection-staging-185155/0bb125b0-f09e-11eb-a384-020a4e309172",
+      "AmplifyAppId": "dbzgb8j6ja74z"
+    },
+    "categories": {
+      "auth": {
+        "stutteringdetection75de5c41": {}
+      }
+    }
+  }
+}

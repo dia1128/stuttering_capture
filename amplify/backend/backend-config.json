@@ -1,0 +1,16 @@
+{
+  "auth": {
+    "stutteringdetection75de5c41": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
+  },
+  "storage": {
+    "s3ba9adb40": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation"
+    }
+  }
+}

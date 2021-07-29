@@ -34,6 +34,11 @@ dependencies:
   #The following adds the dependencies for image picker or uploading image.
   image_picker:
 
+#Amplify Libraries
+  amplify_auth_cognito: ^0.2.0
+  amplify_flutter: ^0.2.0
+  amplify_storage_s3: ^0.2.0
+
 
 dev_dependencies:
   flutter_test:
