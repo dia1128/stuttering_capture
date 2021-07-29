@@ -32,7 +32,7 @@ dependencies:
   path_provider:
 
   #The following adds the dependencies for image picker or uploading image.
-  image_picker: ^0.6.6+5
+  image_picker:
 
 
 dev_dependencies:

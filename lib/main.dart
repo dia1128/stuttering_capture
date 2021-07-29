@@ -188,6 +188,7 @@ class ShowMessage extends StatefulWidget {
 class _ShowMessageState extends State<ShowMessage> {
 
   File image;
+  ImagePicker imagePicker = ImagePicker();
   @override
   Widget build(BuildContext context) {
     /*return Scaffold(
@@ -222,37 +223,61 @@ class _ShowMessageState extends State<ShowMessage> {
           SizedBox(
             height: 32,
           ),
-          Center(
-            child: GestureDetector(
-              onTap: () {
-                _showPicker(context);
-              },
-              child: CircleAvatar(
-                radius: 55,
-                backgroundColor: Color(0xffFDCF09),
-                child: image != null
-                    ? ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: Image.file(
-                    image,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.fitHeight,
-                  ),
-                )
-                    : Container(
-                  decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(50)),
-                  width: 100,
-                  height: 100,
-                  child: Icon(
-                    Icons.camera_alt,
-                    color: Colors.grey[800],
-                  ),
+          Column(
+
+            children: [
+              Text("Description"),
+              TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Feedback',
                 ),
               ),
-            ),
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    _showPicker(context);
+                  },
+                  child: CircleAvatar(
+                    radius: 55,
+                    backgroundColor: Color(0xffFDCF09),
+                    child: image != null
+                        ? ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: Image.file(
+                        image,
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.fitHeight,
+                      ),
+                    )
+                        : Container(
+                      decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(50)),
+                      width: 100,
+                      height: 100,
+                      child: Icon(
+                        Icons.camera_alt,
+                        color: Colors.grey[800],
+                      ),
+                    ),
+                  ),
+                ),
+
+
+              ),
+              ElevatedButton(
+                style: ButtonStyle(
+                  //foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                ),
+                onPressed: () {
+
+                },
+                child: const Text('Submit'),
+              ),
+
+            ],
           )
         ],
       ),
@@ -262,23 +287,31 @@ class _ShowMessageState extends State<ShowMessage> {
 
   /// Get from Camera and gallery
   _imgFromCamera() async {
-    File image = await ImagePicker.pickImage(
+    PickedFile image = await imagePicker.getImage(
         source: ImageSource.camera, imageQuality: 50
-    );
 
-    setState(() {
-      image = image;
-    });
+
+    );
+    if (image != null )
+    {
+      setState(() {
+        this.image = File(image.path);
+      });
+    }
+
   }
 
   _imgFromGallery() async {
-    File image = await  ImagePicker.pickImage(
+    PickedFile image = await  imagePicker.getImage(
         source: ImageSource.gallery, imageQuality: 50
     );
 
-    setState(() {
-      image = image;
-    });
+    if (image != null )
+    {
+      setState(() {
+        this.image = File(image.path);
+      });
+    }
   }
 
   void _showPicker(context) {
